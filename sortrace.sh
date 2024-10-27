@@ -1,22 +1,31 @@
-# This file is called sortrace.sh
-# It must have execute privilege set to run
-# run it as a background task like this: (see the 2 lines below)
-#----------------------------------------------------------------------------------------------
+############################################################
+# this file should be called sortrace.sh
+# it must have execute privilege set to run
+# run it as a background task like this:
 # $ rm sortrace.log # start with fresh log file
-# $ sortrace.sh >> sortrace.log & # this may take an hour
-#----------------------------------------------------------------------------------------------
-#
+# $ sortrace.sh >> sortrace.log & # run in the background
+############################################################
+echo "=======Start======="
+whoami
+date
+echo My machine has this many processors
+nproc # this is for Windows machines
 echo Generating 1000000 random numbers
 sleep 1
-./generate 10000 -100000 100000 # you have to write generate.cpp
+./generate 1000000 -1000000 1000000 # you have to write generate.cpp
 sleep 1
 echo Starting system sort
 sleep 1
 { time sort -n numbers.dat > systemsort.out; } 2>> sortrace.log # this line is for Windows
 sleep 1
-echo Starting mysort
+echo Starting my sort
 sleep 1
 { time ./mysort numbers.dat mysort.out; } 2>> sortrace.log # this line is for Windows
 sleep 1
-wc mysort.out
-sort -c -n mysort.out 2>> sortrace.log # verify file is sorted
+ls -l systemsort.out
+ls -l mysort.out
+echo Comparing systemsort.out to mysort.out
+diff systemsort.out mysort.out 2>> sortrace.log
+echo All done with diff compare
+echo "=======End======="
+date
