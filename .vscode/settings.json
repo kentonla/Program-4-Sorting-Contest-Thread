@@ -3,6 +3,9 @@
         "stdexcept": "cpp",
         "ostream": "cpp",
         "cstdlib": "cpp",
-        "ctime": "cpp"
+        "ctime": "cpp",
+        "istream": "cpp",
+        "iostream": "cpp",
+        "thread": "cpp"
     }
 }
