@@ -10,6 +10,7 @@
 #include <thread>
 #include <mutex> 
 #include <fstream>
+#include <bits/stdc++.h>
 using namespace std;
 mutex mtx;
 long long swapCount = 0;  //global variable keeps track of all the swaps
@@ -33,41 +34,22 @@ void bubble(int A[], int size, int threadNum)
   mtx.unlock();
 }
 
-void merge(int a1[], int s1, int a2[], int s2) {
-    // Create a temporary array to hold the merged result
-    int temp[s1 + s2];
+// in the merge arguments add one more for a third array
+void merge(int a1[], int s1, int a2[], int s2, int a3[]) {
+  int i = 0, j = 0, k = 0;
 
-    int i = 0; // Index for the first array
-    int j = 0; // Index for the second array
-    int k = 0; // Index for the temporary array
+  // Traverse arr1 and insert its elements into arr3
+  while (i < s1) {
+      a3[k++] = a1[i++];
+  }
 
-    // Loop to merge both arrays
-    while (i < s1 && j < s2) {
-        if (a1[i] <= a2[j]) {
-            temp[k++] = a1[i++]; // Copy from a1 if it's smaller or equal
-        } else {
-            temp[k++] = a2[j++]; // Copy from a2 if it's smaller
-        }
-    }
+  // Traverse arr2 and insert its elements into arr3
+  while (j < s2) {
+      a3[k++] = a2[j++];
+  }
 
-    // Copy remaining elements from a1, if any
-    while (i < s1) {
-        temp[k++] = a1[i++];
-    }
-
-    // Copy remaining elements from a2, if any
-    while (j < s2) {
-        temp[k++] = a2[j++];
-    }
-
-    // Copy all merged elements back to nums (or can also return temp if needed)
-    for (int index = 0; index < s1 + s2; index++) {
-        if (index < s1) {
-            a1[index] = temp[index]; // If a1 size is sufficient
-        } else {
-            a2[index - s1] = temp[index]; // Place remaining elements in a2
-        }
-    }
+  // Sort the entire arr3
+  sort(a3, a3 + s1 + s2);
 }
 
 int main(int argc, char* argv[]){
@@ -157,21 +139,59 @@ int main(int argc, char* argv[]){
     for (int i = 0; i < threadCount; i++) {
         threads[i].join();
     }
-    // merge(ptr1, ptr_size, ptr2, ptr_size);
-    // merge(ptr3, ptr_size, ptr4, ptr_size);
-    // merge(ptr5, ptr_size, ptr6, ptr_size);
-    // merge(ptr7, ptr_size, ptr8, ptr_size);
-    // merge(ptr1, ptr_size * 2, ptr3, ptr_size * 2);
-    // merge(ptr5, ptr_size * 2, ptr7, ptr_size * 2);
-    // merge(ptr1, ptr_size * 4, ptr5, ptr_size * 4);
+    int section_size = size / 16;
+    int* a1 = new int[section_size * 2];
+    int* a2 = new int[section_size * 2];
+    int* a3 = new int[section_size * 2];
+    int* a4 = new int[section_size * 2];
+    int* a5 = new int[section_size * 2];
+    int* a6 = new int[section_size * 2];
+    int* a7 = new int[section_size * 2];
+    int* a8 = new int[section_size * 2];
+
+    merge(ptr1, ptr_size, ptr2, ptr_size, a1);
+    merge(ptr3, ptr_size, ptr4, ptr_size, a2);
+    merge(ptr5, ptr_size, ptr6, ptr_size, a3);
+    merge(ptr7, ptr_size, ptr8, ptr_size, a4);
+    merge(ptr9, ptr_size, ptr10, ptr_size, a5);
+    merge(ptr11, ptr_size, ptr12, ptr_size, a6);
+    merge(ptr13, ptr_size, ptr14, ptr_size, a7);
+    merge(ptr15, ptr_size, ptr16, ptr_size, a8);
+
+    int* a9 = new int[section_size * 4];
+    int* a10 = new int[section_size * 4];
+    int* a11 = new int[section_size * 4];
+    int* a12 = new int[section_size * 4];
+
+    merge(a1, section_size * 2, a2, section_size * 2, a9);
+    merge(a3, section_size * 2, a4, section_size * 2, a10);
+    merge(a5, section_size * 2, a6, section_size * 2, a11);
+    merge(a7, section_size * 2, a8, section_size * 2, a12);
+
+    int* a13 = new int[section_size * 8];
+    int* a14 = new int[section_size * 8];
+    merge(a9, section_size * 4, a10, section_size * 4, a13);
+    merge(a11, section_size * 4, a12, section_size * 4, a14);
+
+    int* finalArray = new int[size];
+    merge(a13, section_size * 8, a14, section_size * 8, finalArray);
     cout << "Total Swaps: " << swapCount << "\n";
     cout << "Ending bubble sort\n";
 
 
 
     for (int i = 0; i < size; i++){
-      fout << numbers[i] << '\n';
+      fout << finalArray[i] << '\n';
     }
+
+
+    delete[] numbers;
+    delete[] a1; delete[] a2; delete[] a3; delete[] a4;
+    delete[] a5; delete[] a6; delete[] a7; delete[] a8;
+    delete[] a9; delete[] a10; delete[] a11; delete[] a12;
+    delete[] a13; delete[] a14; delete[] finalArray;
+
+
     fout.close();
     fin.close();
     cout << size << " numbers sorted and transferred from " << argv[1] << " to " << argv[2] << endl;
