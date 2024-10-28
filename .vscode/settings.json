@@ -6,6 +6,12 @@
         "ctime": "cpp",
         "istream": "cpp",
         "iostream": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "format": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp"
     }
 }

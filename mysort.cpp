@@ -17,15 +17,19 @@ long long swapCount = 0;  //global variable keeps track of all the swaps
 void bubble(int A[], int size, int threadNum)
 {
   mtx.lock();
+  int localSwapCount = 0;
   for (int i = 1; i < size; i++) {
     for (int j = 0; j < size-1; j++) {
       if (A[j] > A[j+1]) {
         int temp = A[j];
         A[j] = A[j+1];
         A[j+1] = temp;
+        localSwapCount++;
       }
     }
   }
+  cout << "Process " << threadNum << " swap count: " << localSwapCount << "\n";
+  swapCount += localSwapCount;
   mtx.unlock();
 }
 
@@ -90,7 +94,7 @@ int main(int argc, char* argv[]){
 
 
     //creates and populates numbers array
-    int numbers[array_size];
+    int* numbers = new int[array_size];
     while (getline(fin, num, '\n')){
       if (size < array_size){
         numbers[size++] = stoi(num);
@@ -153,6 +157,14 @@ int main(int argc, char* argv[]){
     for (int i = 0; i < threadCount; i++) {
         threads[i].join();
     }
+    // merge(ptr1, ptr_size, ptr2, ptr_size);
+    // merge(ptr3, ptr_size, ptr4, ptr_size);
+    // merge(ptr5, ptr_size, ptr6, ptr_size);
+    // merge(ptr7, ptr_size, ptr8, ptr_size);
+    // merge(ptr1, ptr_size * 2, ptr3, ptr_size * 2);
+    // merge(ptr5, ptr_size * 2, ptr7, ptr_size * 2);
+    // merge(ptr1, ptr_size * 4, ptr5, ptr_size * 4);
+    cout << "Total Swaps: " << swapCount << "\n";
     cout << "Ending bubble sort\n";
 
 
