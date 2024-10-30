@@ -17,7 +17,6 @@ long long swapCount = 0;  //global variable keeps track of all the swaps
 
 void bubble(int A[], int size, int threadNum)
 {
-  mtx.lock();
   int localSwapCount = 0;
   for (int i = 1; i < size; i++) {
     for (int j = 0; j < size-1; j++) {
@@ -30,26 +29,44 @@ void bubble(int A[], int size, int threadNum)
     }
   }
   cout << "Process " << threadNum << " swap count: " << localSwapCount << "\n";
+  mtx.lock();
   swapCount += localSwapCount;
   mtx.unlock();
 }
 
 // in the merge arguments add one more for a third array
+// void merge(int a1[], int s1, int a2[], int s2, int a3[]) {
+//   int i = 0, j = 0, k = 0;
+
+//   // Traverse arr1 and insert its elements into arr3
+//   while (i < s1) {
+//       a3[k++] = a1[i++];
+//   }
+
+//   // Traverse arr2 and insert its elements into arr3
+//   while (j < s2) {
+//       a3[k++] = a2[j++];
+//   }
+
+//   // Sort the entire arr3
+//   sort(a3, a3 + s1 + s2);
+// }
+
 void merge(int a1[], int s1, int a2[], int s2, int a3[]) {
-  int i = 0, j = 0, k = 0;
+    int i = 0, j = 0, k = 0;
 
-  // Traverse arr1 and insert its elements into arr3
-  while (i < s1) {
-      a3[k++] = a1[i++];
-  }
+    while (i < s1 && j < s2) {
+        if (a1[i] < a2[j])
+            a3[k++] = a1[i++];
+        else
+            a3[k++] = a2[j++];
+    }
 
-  // Traverse arr2 and insert its elements into arr3
-  while (j < s2) {
-      a3[k++] = a2[j++];
-  }
+    while (i < s1)
+        a3[k++] = a1[i++];
 
-  // Sort the entire arr3
-  sort(a3, a3 + s1 + s2);
+    while (j < s2)
+        a3[k++] = a2[j++];
 }
 
 int main(int argc, char* argv[]){
@@ -118,7 +135,7 @@ int main(int argc, char* argv[]){
     }
 
     // Creating threads and running bubble sort
-    thread threads[threadCount];
+    thread* threads = new thread[threadCount];
     threads[0] = thread(bubble, ptr1, ptr_size, 1);
     threads[1] = thread(bubble, ptr2, ptr_size, 2);
     threads[2] = thread(bubble, ptr3, ptr_size, 3);
@@ -189,7 +206,7 @@ int main(int argc, char* argv[]){
     delete[] a1; delete[] a2; delete[] a3; delete[] a4;
     delete[] a5; delete[] a6; delete[] a7; delete[] a8;
     delete[] a9; delete[] a10; delete[] a11; delete[] a12;
-    delete[] a13; delete[] a14; delete[] finalArray;
+    delete[] a13; delete[] a14; delete[] finalArray; delete[] threads;
 
 
     fout.close();
